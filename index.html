@@ -1,0 +1,143 @@
+<!doctype html>
+
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Selamat Ulang Tahun — King Hanzo</title>
+  <style>
+    :root{--accent:#ffdd57;--glass:rgba(255,255,255,0.06)}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial}
+    body{background:#000;display:grid;place-items:center;color:#fff;overflow:hidden}/* card that holds the photo and message */
+.card{
+  width:92vw;max-width:980px;height:600px;border-radius:18px;display:grid;grid-template-columns:1fr 1fr;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.7);background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));backdrop-filter: blur(6px);
+  transform:translateY(20px);animation:rise 900ms cubic-bezier(.2,.9,.3,1) forwards;
+}
+@keyframes rise{from{opacity:0;transform:translateY(40px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+
+/* left: photo */
+.photo{
+  background:black;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden
+}
+.photo::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg, rgba(0,0,0,0.15), rgba(0,0,0,0.55));mix-blend-mode:multiply}
+.photo img{width:110%;height:110%;object-fit:cover;transform:scale(1.05);filter:contrast(.95) saturate(.9);transition:transform 600ms}
+.photo:hover img{transform:scale(1.12) rotate(-1.2deg)}
+
+/* right: message */
+.panel{padding:40px;display:flex;flex-direction:column;justify-content:center;gap:18px}
+.headline{font-size:34px;letter-spacing:0.6px;margin:0;display:flex;align-items:center;gap:12px}
+.headline .emoji{font-size:42px;transform:translateY(6px);display:inline-block;animation:wiggle 1800ms infinite}
+@keyframes wiggle{0%{transform:rotate(0)}25%{transform:rotate(-8deg)}50%{transform:rotate(6deg)}75%{transform:rotate(-4deg)}100%{transform:rotate(0)}}
+
+.sub{color:#cbd5e1;opacity:.9;margin:0;font-size:16px}
+
+/* neon effect for the name */
+.name{font-weight:800;color:var(--accent);font-size:46px;line-height:1;letter-spacing:1px;text-shadow:0 0 18px rgba(255,221,87,0.12),0 6px 30px rgba(0,0,0,0.6);animation:glow 2.2s ease-in-out infinite}
+@keyframes glow{0%{filter:brightness(1)}50%{filter:brightness(1.18)}100%{filter:brightness(1)}}
+
+/* typing-ish reveal for the full message */
+.msg{font-size:18px;color:#e6eef8;max-width:420px}
+.highlight{display:inline-block;background:linear-gradient(90deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));padding:6px 10px;border-radius:10px}
+
+/* CTA bar */
+.cta{margin-top:10px;display:flex;gap:12px}
+.btn{padding:10px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:#fff;cursor:pointer;font-weight:600;backdrop-filter:blur(6px)}
+.btn:active{transform:translateY(1px)}
+
+/* small decorative moving stripes */
+.stripes{position:absolute;inset:0;pointer-events:none}
+.stripe{position:absolute;left:-20%;width:40%;height:120%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.02),transparent);transform:rotate(-12deg);opacity:0.4;animation:slide 6s linear infinite}
+.stripe.s2{left:10%;animation-delay:1.2s}
+.stripe.s3{left:40%;animation-delay:2.3s}
+@keyframes slide{0%{transform:translateX(-30%) rotate(-12deg)}100%{transform:translateX(40%) rotate(-12deg)}}
+
+/* responsive */
+@media (max-width:720px){
+  .card{grid-template-columns:1fr;height:auto;padding-bottom:18px}
+  .photo{height:360px}
+  .panel{padding:20px}
+  .name{font-size:34px}
+}
+
+/* small confetti area */
+#confettiCanvas{position:absolute;inset:0;pointer-events:none}
+
+  </style>
+</head>
+<body>
+  <div class="card" role="region" aria-label="Ucapan ulang tahun King Hanzo">
+    <div class="photo">
+      <!-- GANTI NAMA FILE: jika Anda membuka file di lokal, tempatkan foto bernama "photo.jpg" di folder yang sama atau ganti src -->
+      <img src="curut.jpg" alt="gambar errot"/>
+      <div class="stripes">
+        <div class="stripe s1"></div>
+        <div class="stripe s2"></div>
+        <div class="stripe s3"></div>
+      </div>
+    </div><div class="panel">
+  <div>
+    <div class="headline">Selamat ulang tahun <span class="emoji">🖕🏻</span></div>
+    <div class="name">King Hanzo</div>
+  </div>
+
+  <p class="sub">Semoga hari ini penuh kejutan (yang keren) dan momen yang bakal dikenang.</p>
+
+  <p class="msg"><span class="highlight" id="typed"></span></p>
+
+  <div class="cta">
+    <button class="btn" id="celebrate">Rayakan 🎉</button>
+    <button class="btn" id="download">Simpan sebagai gambar</button>
+  </div>
+</div>
+
+  </div><canvas id="confettiCanvas"></canvas>
+
+  <script>
+    // ------- typing effect -------
+    const text = 'Semoga panjang umur, sehat, dan selalu jadi versi terbaik dari diri sendiri — Have a legendary day, King Hanzo!';
+    const typedEl = document.getElementById('typed');
+    let i=0;
+    function typeNext(){
+      if(i<text.length){
+        typedEl.innerHTML += text.charAt(i);
+        i++;
+        setTimeout(typeNext, 28 + Math.random()*35);
+      }
+    }
+    setTimeout(typeNext, 800);
+
+    // ------- simple confetti particles -------
+    const canvas = document.getElementById('confettiCanvas');
+    const ctx = canvas.getContext('2d');
+    let W=canvas.width=innerWidth, H=canvas.height=innerHeight;
+    window.addEventListener('resize',()=>{W=canvas.width=innerWidth;H=canvas.height=innerHeight});
+
+    function rand(min,max){return Math.random()*(max-min)+min}
+    class Particle{
+      constructor(){this.reset()}
+      reset(){this.x=rand(0,W);this.y=rand(-H,0);this.vx=rand(-1.2,1.2);this.vy=rand(1.5,4);this.size=rand(6,14);this.t=Math.random()*360;this.color=['#ff4d6d','#ffd166','#6ee7b7','#8ec5ff','#c792ea'][~~rand(0,5)]}
+      update(){this.x+=this.vx;this.y+=this.vy;this.t+=0.06;this.vx*=0.999;if(this.y>H+30)this.reset();}
+      draw(){ctx.save();ctx.translate(this.x,this.y);ctx.rotate(Math.sin(this.t)*0.6);ctx.fillStyle=this.color;ctx.fillRect(-this.size/2,-this.size/2,this.size,this.size);ctx.restore()}
+    }
+    const particles = Array.from({length:80},()=>new Particle());
+    function loop(){ctx.clearRect(0,0,W,H);for(const p of particles){p.update();p.draw()}requestAnimationFrame(loop)}
+    loop();
+
+    // ------- celebrate button triggers more confetti burst -------
+    document.getElementById('celebrate').addEventListener('click',()=>{
+      for(let i=0;i<120;i++){setTimeout(()=>particles.push(new Particle()), i*4)}
+    });
+
+    // ------- simple save as image: draw card area to canvas and download -------
+    document.getElementById('download').addEventListener('click', async ()=>{
+      const card = document.querySelector('.card');
+      // use html2canvas-like trick: we will create a temporary SVG foreignObject (works in many browsers)
+      const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='${card.offsetWidth}' height='${card.offsetHeight}'><foreignObject width='100%' height='100%'>${new XMLSerializer().serializeToString(card)}</foreignObject></svg>`;
+      const img = new Image();
+      const blob = new Blob([svg], {type: 'image/svg+xml;charset=utf-8'});
+      const url = URL.createObjectURL(blob);
+      img.onload = ()=>{const c=document.createElement('canvas');c.width=card.offsetWidth;c.height=card.offsetHeight;const cx=c.getContext('2d');cx.fillStyle='#000';cx.fillRect(0,0,c.width,c.height);cx.drawImage(img,0,0);URL.revokeObjectURL(url);const a=document.createElement('a');a.href=c.toDataURL('image/png');a.download='ucapan_king_hanzo.png';a.click();}
+      img.src = url;
+    });
+  </script></body>
+</html>
